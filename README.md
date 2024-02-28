@@ -1,10 +1,12 @@
-# Chat-App (MERN Stack) (Click to Visit)[]
-- Frontend (React + Vite) (Link)[]
-- Backend (Nodejs) (Link)[]
+# Chat-App (MERN Stack) [(Live link)]()
+
+- Frontend (React + Vite)
+- [Backend (Nodejs) ](https://github.com/itz-AmdadulHaque/Chat-App-Backend-)
 
 A simple chat app.
 
 ## Env variable
+
 - VITE_BASE_URL
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

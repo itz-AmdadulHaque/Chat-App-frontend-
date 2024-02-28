@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import useChat from "../../hooks/useChat.js"
+import {axiosPrivate} from "../../api/axios.js"
 
 const Login = () => {
   const navigate = useNavigate();
+  const {setUser, setToken} = useChat()
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,20 +18,17 @@ const Login = () => {
     setMessage("Loading... Please wait");
 
     try {
-      const URL = import.meta.env.VITE_BASE_URL; //alway use this to access env in vite, "VITE_NAME"
-      // console.log("url: ",URL)
-      const response = await axios.post(
-        `${URL}/users/login`,
+      const {data} = await axiosPrivate.post(
+        "/users/login",
         {
           email,
           password,
         },
-        {
-          withCredentials: true, // must needed to include cookies in cross-origin requests.
-        }
       );
-      console.log(response.data);
-      setMessage(response.data.message);
+      console.log(data);
+      setUser(data?.data?.user)
+      setToken(data?.data?.accessToken)
+      setMessage(data.message);
 
       navigate("/chat", { replace: true });
     } catch (error) {
@@ -46,6 +45,7 @@ const Login = () => {
         {message && <p>{message}</p>}
 
         <input
+        className="text-black"
           type="email"
           placeholder="Your Email"
           value={email}
@@ -54,6 +54,7 @@ const Login = () => {
         />
 
         <input
+        className="text-black"
           type="password"
           placeholder="Your Password"
           value={password}
