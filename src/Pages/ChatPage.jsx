@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import useChat from "../hooks/useChat";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import Search from "../components/Search";
 import Navbar from "../components/Navbar";
 import MyChats from "../components/MyChats";
+import Chatbox from "../components/Chatbox";
 
 const ChatPage = () => {
-  const { user, setUser, chats, setChats, Waiting, setWaiting } = useChat();
+  const { user, setUser, chats, setChats, selectedChat,setSelectedChat, Waiting, setWaiting } = useChat();
   const axiosPrivate = useAxiosPrivate();
 
-  const [openChat, setOpenChat] = useState()
 
   useEffect(() => {
     async function fetchData() {
@@ -24,6 +23,13 @@ const ChatPage = () => {
         const resChats = await axiosPrivate.get("/chat");
         console.log(resChats?.data?.data);
         setChats(resChats?.data?.data);
+        
+        // getting selected chat index from chats list from storage or set to first one
+        const selectedChatIndex = localStorage.getItem('selectedChatIndex') || 0
+        const chatIndex  = parseInt(selectedChatIndex)
+        console.log(parseInt(selectedChatIndex))
+        setSelectedChat(resChats?.data?.data[chatIndex])
+
 
         setWaiting(false);
       } catch (error) {
@@ -42,9 +48,9 @@ const ChatPage = () => {
         <>
           <Navbar />
           <div className="py-[2px] min-h-0 flex-grow gap-2">
-            <div className=" h-full flex">
+            <div className=" h-full flex gap-1">
               <MyChats />
-              <p>My messagaes</p>
+              <Chatbox/>
             </div>
           </div>
         </>

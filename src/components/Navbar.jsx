@@ -5,7 +5,7 @@ import useChat from "../hooks/useChat";
 import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const axiosPrivate = useAxiosPrivate();
-  const { user, setUser, setToken } = useChat();
+  const { user, setUser, setToken, setChats, selectedChat, setNotification } = useChat();
   const navigate = useNavigate();
 
   const [showProfile, setShowProfile] = useState(false);
@@ -13,10 +13,14 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       const { data } = await axiosPrivate.get("/users/logout");
-
+      localStorage.removeItem("selectedChatIndex");
       console.log(data);
+
       setUser({});
       setToken("");
+      setChats([]);
+      selectedChat({});
+      setNotification([]);
 
       navigate("/");
     } catch (error) {
@@ -55,7 +59,6 @@ const Navbar = () => {
       </div>
 
       {/* profile detail */}
-      
     </nav>
   );
 };

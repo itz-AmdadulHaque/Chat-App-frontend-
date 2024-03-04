@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useChat from "../../hooks/useChat.js"
-import {axiosPrivate} from "../../api/axios.js"
+import useChat from "../../hooks/useChat.js";
+import { axiosPrivate } from "../../api/axios.js";
 
 const Login = () => {
   const navigate = useNavigate();
-  const {setUser, setToken} = useChat()
+  const { setUser, setToken } = useChat();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,16 +18,13 @@ const Login = () => {
     setMessage("Loading... Please wait");
 
     try {
-      const {data} = await axiosPrivate.post(
-        "/users/login",
-        {
-          email,
-          password,
-        },
-      );
+      const { data } = await axiosPrivate.post("/users/login", {
+        email,
+        password,
+      });
       console.log(data);
-      setUser(data?.data?.user)
-      setToken(data?.data?.accessToken)
+      setUser(data?.data?.user);
+      setToken(data?.data?.accessToken);
       setMessage(data.message);
 
       navigate("/chat", { replace: true });
@@ -39,40 +36,36 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <form className="grid gap-2" onSubmit={handleSubmit}>
-        <h1 className="text-2xl font-bold">login</h1>
-        {message && <p>{message}</p>}
+    <form className="grid gap-2 p-2" onSubmit={handleSubmit}>
+      {message && <p className="text-red-600 text-center">{message}</p>}
+      <input
+        className="bg-neutral-500 px-2 py-[4px] rounded"
+        type="email"
+        placeholder="Your Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
 
-        <input
-        className="text-black"
-          type="email"
-          placeholder="Your Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      <input
+        className="bg-neutral-500 px-2 py-[4px] rounded"
+        type="password"
+        placeholder="Your Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
-        <input
-        className="text-black"
-          type="password"
-          placeholder="Your Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button
-          className={`bg-blue-300 rounded px-10 py-2 border-2 ${
-            !disable ? "hover:bg-white hover:border-blue-300" : ""
-          }`}
-          type="submit"
-          disabled={disable}
-        >
-          Login
-        </button>
-      </form>
-    </div>
+      <button
+        className={`font-semibold bg-neutral-700 border-2 border-neutral-700 px-2 py-[4px] rounded ${
+          !disable ? "hover:border-neutral-500" : ""
+        }`}
+        type="submit"
+        disabled={disable}
+      >
+        Login
+      </button>
+    </form>
   );
 };
 

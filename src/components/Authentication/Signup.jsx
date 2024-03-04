@@ -52,66 +52,69 @@ const Singup = () => {
   };
 
   return (
-    <div>
-      <form className="grid gap-2" onSubmit={handleSubmit}>
-        <h1 className="text-2xl font-bold">signup</h1>
-        {message && <p>{message}</p>}
+    <form className="grid gap-2 p-2" onSubmit={handleSubmit}>
+      {message && <p className="text-red-600 text-center">{message}</p>}
 
-        <input
-          type="text"
-          placeholder="Your Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+      <input
+        className="bg-neutral-500 px-2 py-[4px] rounded"
+        type="text"
+        placeholder="Your Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
 
-        <input
-          type="email"
-          placeholder="Your Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      <input
+        className="bg-neutral-500 px-2 py-[4px] rounded"
+        type="email"
+        placeholder="Your Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
 
-        <input
-          type="password"
-          placeholder="Your Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+      <input
+        className="bg-neutral-500 px-2 py-[4px] rounded"
+        type="password"
+        placeholder="Your Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
 
-        <input
-          type="password"
-          placeholder="Comfirm Password"
-          value={confirmpassword}
-          onChange={(e) => setConfirmpassword(e.target.value)}
-          required
-        />
+      <input
+        className="bg-neutral-500 px-2 py-[4px] rounded"
+        type="password"
+        placeholder="Comfirm Password"
+        value={confirmpassword}
+        onChange={(e) => setConfirmpassword(e.target.value)}
+        required
+      />
 
-        <label className="font-bold" htmlFor="pic">
-          Upload image
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          id="pic"
-          onChange={(e) => {
-            setPic(e.target.files[0]);
-            console.log(e.target.files[0]);
-          }}
-        />
-        <button
-          className={`bg-blue-300 rounded px-10 py-2 border-2 ${
-            !disable ? "hover:bg-white hover:border-blue-300" : ""
-          }`}
-          type="submit"
-          disabled={disable}
-        >
-          Signup
-        </button>
-      </form>
-    </div>
+      <label className="font-bold" htmlFor="pic">
+        Upload image (Optional)
+      </label>
+      <input
+        className="block w-full text-sm text-neutral-400 border border-neutral-500 rounded-lg cursor-pointer bg-neutral-500 focus:outline-none"
+        type="file"
+        accept="image/*"
+        id="pic"
+        onChange={(e) => {
+          setPic(e.target.files[0]);
+          console.log(e.target.files[0]);
+        }}
+      />
+
+      <button
+        className={`font-semibold bg-neutral-700 border-2 border-neutral-700 px-2 py-[4px] rounded ${
+          !disable ? "hover:border-neutral-500" : ""
+        }`}
+        type="submit"
+        disabled={disable}
+      >
+        Signup
+      </button>
+    </form>
   );
 };
 

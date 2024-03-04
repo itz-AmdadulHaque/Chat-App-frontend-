@@ -42,6 +42,7 @@ const GroupModel = ({ setGroupClick }) => {
   };
 
   const handleCreateGroup = async () => {
+    setErrorMessage("Creating Group, Please wait...")
     try {
       const { data } = await axiosPrivate.post("/chat/group", {
         name: groupName,
@@ -63,7 +64,7 @@ const GroupModel = ({ setGroupClick }) => {
   return (
     <div className="absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
       <div className="flex flex-col w-screen h-screen sm:w-[310px] sm:h-[70%] p-2 border-2 rounded-md bg-neutral-800">
-        {/* headin */}
+        {/* heading */}
         <section className="relative pt-2 pb-6">
           <h3 className="text-xl text-center">Create Group</h3>
           <button
@@ -87,6 +88,7 @@ const GroupModel = ({ setGroupClick }) => {
                 <li
                   className="relative flex flex-col items-center py-2"
                   onClick={() => handleAdd(false, user)}
+                  key={user?._id}
                 >
                   <div
                     className="w-6 h-6 bg-cover bg-center rounded-full"
@@ -141,41 +143,51 @@ const GroupModel = ({ setGroupClick }) => {
 
         {/* search users list */}
         <section className="min-h-0 flex-grow">
-          <ul className=" h-full overflow-x-hidden custom-scrollbar overflow-y-auto">
-            {searchUsers.map((user) => {
-              return (
-                <li
-                  className="mt-1 px-4  bg-neutral-700 flex justify-between items-center"
-                  key={user?._id}
-                >
-                  <label
-                    className=" flex-grow flex items-center gap-2"
-                    htmlFor={user?._id}
+          {loading ? (
+            <p className="px-2">Loading...</p>
+          ) : (
+            <ul className=" h-full overflow-x-hidden custom-scrollbar overflow-y-auto">
+              {searchUsers.map((user) => {
+                return (
+                  <li
+                    className="mt-1 px-4  bg-neutral-700 flex justify-between items-center"
+                    key={user?._id}
                   >
-                    <div
-                      className={`w-8 h-8  rounded-full bg-cover bg-center bg-neutral-800`}
-                      style={{ backgroundImage: `url(${user?.pic})` }}
-                    ></div>
-                    <div>
-                      <p>{user?.name}</p>
-                      <p className="text-xs font-light">{user?.email}</p>
-                    </div>
-                  </label>
+                    <label
+                      className=" flex-grow flex items-center gap-2"
+                      htmlFor={user?._id}
+                    >
+                      <div
+                        className={`w-8 h-8  rounded-full bg-cover bg-center bg-neutral-800`}
+                        style={{ backgroundImage: `url(${user?.pic})` }}
+                      ></div>
+                      <div>
+                        <p>{user?.name}</p>
+                        <p className="text-xs font-light">{user?.email}</p>
+                      </div>
+                    </label>
 
-                  <input
-                    className="w-4 h-4 bg-black"
-                    type="checkbox"
-                    checked={user?.isChecked || false}
-                    // user initially not have the isChecked value
-                    id={user?._id}
-                    onChange={(e) => {
-                      handleAdd(e.target.checked, user);
-                    }}
-                  />
-                </li>
-              );
-            })}
-          </ul>
+                    <input
+                      className="w-4 h-4 bg-black"
+                      type="checkbox"
+                      checked={
+                        user?.isChecked ||
+                        selectedUsers.find(
+                          (selectedUser) => selectedUser?._id === user?._id
+                        ) ||
+                        false
+                      }
+                      // user initially not have the isChecked property, adding this
+                      id={user?._id}
+                      onChange={(e) => {
+                        handleAdd(e.target.checked, user);
+                      }}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
       </div>
     </div>

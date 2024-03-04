@@ -1,16 +1,18 @@
 import { useState } from "react";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useChat from "../hooks/useChat";
 import { FaPlus } from "react-icons/fa";
 import chatName from "../utils/chatName";
 import GroupModel from "./GroupModel";
 
 const MyChats = () => {
-  const { user, chats, setChats } = useChat();
-  const axiosPrivate = useAxiosPrivate();
+  const { user, chats, setChats, selectedChat, setSelectedChat } = useChat();
 
-  const [groupClick, setGroupClick] = useState(false)
+  const [groupClick, setGroupClick] = useState(false) // create group
 
+  const handleChatSelected = (chat, index)=>{
+    setSelectedChat(chat)
+    localStorage.setItem('selectedChatIndex', index.toString());
+  }
   return (
     <div className="w-[300px] h-full px-4 flex flex-col bg-neutral-800 ">
       <section className="flex justify-between items-center my-2 ">
@@ -23,8 +25,9 @@ const MyChats = () => {
 
       <section className="min-h-0 flex-grow">
         <ul className="h-full  custom-scrollbar overflow-x-hidden overflow-y-auto">
-          {chats.map((chat) => (
+          {chats.map((chat, index) => (
             <li
+              onClick={()=> {handleChatSelected(chat, index)}}
               className="p-2 my-2 bg-neutral-600 hover:bg-neutral-500"
               key={chat?._id}
             >
