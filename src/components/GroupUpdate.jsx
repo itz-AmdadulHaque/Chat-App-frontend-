@@ -137,46 +137,53 @@ const GroupUpdate = ({ setViewDetail }) => {
       setButtonDisable(false);
     }
   };
+  
+  // backend not finish yet
+  const handleLeave = async ()=>{
+    setErrorMessage("not implemented yet")
+  }
+  //(backend not finish yet) only admin can delete group chat
+  const handleDeleteGroup = async () => {
+    setErrorMessage("Sorry, Not implemented yet");
 
-  const handleDelete = async () => {
-    try {
-      setErrorMessage("Wait, Deleting the Group...");
-      setButtonDisable(true);
+    // try {
+    //   setErrorMessage("Wait, Deleting the Group...");
+    //   setButtonDisable(true);
 
-      const { data } = await axiosPrivate.delete("chat/deleteGroup", {
-        // data property must have to be added to send the paloaded data in delete method
-        data: {
-          chatId: selectedChat?._id,
-        },
-      });
-      console.log(data);
+    //   const { data } = await axiosPrivate.delete("chat/deleteGroup", {
+    //     // data property must have to be added to send the paloaded data in delete method
+    //     data: {
+    //       chatId: selectedChat?._id,
+    //     },
+    //   });
+    //   console.log(data);
 
-      setChats((prevChats) => {
-        if (prevChats.length === 1) {
-          setSelectedChat({});
-        } else if (
-          prevChats.length > 1 &&
-          prevChats[0]._id === selectedChat?._id
-        ) {
-          setSelectedChat(prevChats[1]);
-        } else {
-          setSelectedChat(prevChats[0]);
-        }
+    //   setChats((prevChats) => {
+    //     if (prevChats.length === 1) {
+    //       setSelectedChat({});
+    //     } else if (
+    //       prevChats.length > 1 &&
+    //       prevChats[0]._id === selectedChat?._id
+    //     ) {
+    //       setSelectedChat(prevChats[1]);
+    //     } else {
+    //       setSelectedChat(prevChats[0]);
+    //     }
 
-        return prevChats.filter((chat) => chat?._id !== selectedChat?._id);
-      });
+    //     return prevChats.filter((chat) => chat?._id !== selectedChat?._id);
+    //   });
 
-      setErrorMessage("");
-      setButtonDisable(false);
-      setViewDetail(false);
-    } catch (error) {
-      console.log(error);
-      // Access specific error message if available
-      const errorMessage =
-        error.response?.data?.message || "An error occurred.";
-      setErrorMessage(errorMessage);
-      setButtonDisable(false);
-    }
+    //   setErrorMessage("");
+    //   setButtonDisable(false);
+    //   setViewDetail(false);
+    // } catch (error) {
+    //   console.log(error);
+    //   // Access specific error message if available
+    //   const errorMessage =
+    //     error.response?.data?.message || "An error occurred.";
+    //   setErrorMessage(errorMessage);
+    //   setButtonDisable(false);
+    // }
   };
 
   return (
@@ -364,7 +371,7 @@ const GroupUpdate = ({ setViewDetail }) => {
         {selectedChat?.groupAdmin?._id === user?._id ? (
           <button
             className="bg-red-700 hover:bg-red-600"
-            onClick={handleDelete}
+            onClick={handleDeleteGroup}
             disabled={buttonDisable}
           >
             Delete
@@ -373,6 +380,7 @@ const GroupUpdate = ({ setViewDetail }) => {
           <button
             className="bg-red-700 hover:bg-red-600"
             disabled={buttonDisable}
+            onClick={handleLeave}
           >
             Leave
           </button>
