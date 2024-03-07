@@ -28,7 +28,7 @@ const MyChats = () => {
           {chats.map((chat, index) => (
             <li
               onClick={()=> {handleChatSelected(chat, index)}}
-              className="p-2 my-2 bg-neutral-600 hover:bg-neutral-500"
+              className={`p-2 my-2 hover:bg-neutral-500 ${selectedChat?._id === chat?._id ? "bg-neutral-500" : "bg-neutral-600"}`}
               key={chat?._id}
             >
               {chat?.isGroupChat? chat?.chatName: chatName(user?._id, chat?.users)}

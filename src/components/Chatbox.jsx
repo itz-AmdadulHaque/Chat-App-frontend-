@@ -4,7 +4,7 @@ import chatName from "../utils/chatName";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { useState } from "react";
 import GroupUpdate from "./GroupUpdate";
-
+import ProfileModel from "./ProfileModel"
 const Chatbox = () => {
   const { user, selectedChat } = useChat();
   const [viewDetail, setViewDetail] = useState(false);
@@ -31,6 +31,7 @@ const Chatbox = () => {
             </button>
           </div>
           {viewDetail && selectedChat?.isGroupChat && <GroupUpdate setViewDetail={setViewDetail}/>}
+          {viewDetail && !selectedChat?.isGroupChat && <ProfileModel setViewDetail={setViewDetail} viewUser= {(selectedChat?.users).filter(eachUser => eachUser?._id !== user?._id)[0]}/>}
         </section>
 
         {/* message box */}

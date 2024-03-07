@@ -7,7 +7,7 @@ import useChat from "../hooks/useChat";
 
 const Search = () => {
   const axiosPrivate = useAxiosPrivate();
-  const {setChats} = useChat()
+  const { setChats, setSelectedChat } = useChat();
 
   const [search, setSearch] = useState(false);
   const [value, setValue] = useState("");
@@ -29,25 +29,34 @@ const Search = () => {
       setLoading(false);
     }
   };
-  const handleAddChat = async (userId) => {
-    try{
-      setChatLoading(true)
-      const {data} = await axiosPrivate.post('/chat', {userId: userId})
-      console.log(data)
 
-      setChats(pre=> {
-        const chatExists = pre.find(
-          (chat) => chat?.users?.some((user) => user._id === userId)
+  const handleAddChat = async (userId) => {
+    try {
+      setChatLoading(true);
+      const { data } = await axiosPrivate.post("/chat", { userId: userId });
+      console.log(data);
+
+      setChats((pre) => {
+        const chatExists = pre.find((chat) =>
+          chat?.users?.some((user) => user._id === userId)
         );
-        return chatExists? pre: [data?.data, ...pre]
-      })
-      setChatLoading(false)
-      setValue("")
-      setUsers([])
-      setSearch(false)
-    }catch(error){
-      console.log(error)
-      setChatLoading(false)
+
+        if (chatExists) {
+          return pre;
+        } else {
+          localStorage.setItem("selectedChatIndex", "0");
+          setSelectedChat(data?.data);
+          return [data?.data, ...pre];
+        }
+      });
+
+      setChatLoading(false);
+      setValue("");
+      setUsers([]);
+      setSearch(false);
+    } catch (error) {
+      console.log(error);
+      setChatLoading(false);
     }
   };
   return (
@@ -97,10 +106,10 @@ const Search = () => {
             {users.map((user) => {
               return (
                 <li
-                  onClick={()=> handleAddChat(user?._id)}
+                  onClick={() => handleAddChat(user?._id)}
                   className="relative p-2 my-2 bg-neutral-700 hover:bg-neutral-800 flex items-center gap-2"
                   key={user?._id}
-                  disabled = {chatLoading}
+                  disabled={chatLoading}
                 >
                   <div
                     className={`w-10 h-10 rounded-full bg-cover bg-center bg-neutral-800`}
@@ -113,7 +122,7 @@ const Search = () => {
                 </li>
               );
             })}
-            {chatLoading && <SpinnerCenter/>}
+            {chatLoading && <SpinnerCenter />}
           </ul>
         </div>
       )}

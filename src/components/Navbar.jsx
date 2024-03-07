@@ -3,11 +3,13 @@ import Search from "./Search";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useChat from "../hooks/useChat";
 import { useNavigate } from "react-router-dom";
+import ProfileModel from "./ProfileModel";
 const Navbar = () => {
   const axiosPrivate = useAxiosPrivate();
-  const { user, setUser, setToken, setChats, selectedChat, setNotification } = useChat();
+  const { user, setUser, setToken, setChats, setSelectedChat, setNotification } = useChat();
   const navigate = useNavigate();
 
+  const [showDetail, setShowDetail] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   const handleLogout = async () => {
@@ -19,7 +21,7 @@ const Navbar = () => {
       setUser({});
       setToken("");
       setChats([]);
-      selectedChat({});
+      setSelectedChat({});
       setNotification([]);
 
       navigate("/");
@@ -44,13 +46,13 @@ const Navbar = () => {
         <div
           className="w-8 h-8 rounded-full bg-cover bg-center bg-neutral-900"
           style={{ backgroundImage: `url(${user?.pic})` }}
-          onClick={() => setShowProfile((pre) => !pre)}
+          onClick={() => setShowDetail((pre) => !pre)}
         ></div>
 
         {/* dropdown */}
-        {showProfile && (
+        {showDetail && (
           <div className="w-24 p-2 mt-[2px] grid text-left absolute right-0 bg-neutral-900">
-            <button className="p-2 hover:bg-neutral-700">Profile</button>
+            <button className="p-2 hover:bg-neutral-700" onClick={()=> setShowProfile(pre => !pre)}>Profile</button>
             <button className="p-2 hover:bg-neutral-700" onClick={handleLogout}>
               Logout
             </button>
@@ -59,6 +61,8 @@ const Navbar = () => {
       </div>
 
       {/* profile detail */}
+      {showProfile && <ProfileModel setViewDetail={setShowProfile} viewUser={user}/>}
+
     </nav>
   );
 };

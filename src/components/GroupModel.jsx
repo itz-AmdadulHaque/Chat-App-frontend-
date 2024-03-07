@@ -5,7 +5,7 @@ import useChat from "../hooks/useChat";
 
 const GroupModel = ({ setGroupClick }) => {
   const axiosPrivate = useAxiosPrivate();
-  const { setChats } = useChat();
+  const { setChats, setSelectedChat } = useChat();
 
   const [groupName, setGroupName] = useState("");
   const [searchValue, setSearchValue] = useState("");
@@ -42,7 +42,7 @@ const GroupModel = ({ setGroupClick }) => {
   };
 
   const handleCreateGroup = async () => {
-    setErrorMessage("Creating Group, Please wait...")
+    setErrorMessage("Creating Group, Please wait...");
     try {
       const { data } = await axiosPrivate.post("/chat/group", {
         name: groupName,
@@ -51,6 +51,9 @@ const GroupModel = ({ setGroupClick }) => {
 
       console.log(data);
       setChats((pre) => [data?.data, ...pre]);
+
+      localStorage.setItem("selectedChatIndex", "0");
+      setSelectedChat(data?.data);
       setGroupClick(false);
     } catch (error) {
       console.log(error);
