@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 3px;
-    height: 5px;
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: black; 
-  }
+  width: 3px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: black;
+}

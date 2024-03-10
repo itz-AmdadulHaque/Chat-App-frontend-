@@ -13,6 +13,7 @@ const GroupUpdate = ({ setViewDetail }) => {
   const [groupName, setGroupName] = useState(selectedChat?.chatName ?? "");
   const [searchValue, setSearchValue] = useState("");
   const [searchUsers, setSearchUsers] = useState([]);
+  const [searchMessage, setSearchMessage] = useState("Search for friend");
   const [showMemebers, setShowMembers] = useState(true);
   const [buttonDisable, setButtonDisable] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -58,8 +59,8 @@ const GroupUpdate = ({ setViewDetail }) => {
       });
 
       setSelectedChat((pre) => {
-        const newUser = (pre?.users).filter((user) => user?._id !== userId);
-        return { ...pre, users: newUser };
+        const newUsers = (pre?.users).filter((user) => user?._id !== userId);
+        return { ...pre, users: newUsers };
       });
       console.log(data?.data);
       setErrorMessage("");
@@ -77,6 +78,7 @@ const GroupUpdate = ({ setViewDetail }) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     setButtonDisable(true);
+    setSearchMessage("Loading...");
     try {
       setLoading(true);
       const { data } = await axiosPrivate.get(
@@ -85,13 +87,19 @@ const GroupUpdate = ({ setViewDetail }) => {
       console.log("users: \n", data);
 
       //filter the group members from search users list
-      const searchUsers = (data?.data).filter((EachUser) => {
+      const filterSearchUser = (data?.data).filter((EachUser) => {
         return !(selectedChat?.users).some(
           (member) => member?._id === EachUser?._id
         );
       });
 
-      setSearchUsers(searchUsers);
+      if (filterSearchUser.length === 0) {
+        setSearchMessage("No user Found");
+      } else {
+        setSearchMessage("");
+      }
+      
+      setSearchUsers(filterSearchUser);
       setLoading(false);
       setButtonDisable(false);
     } catch (error) {
@@ -137,57 +145,95 @@ const GroupUpdate = ({ setViewDetail }) => {
       setButtonDisable(false);
     }
   };
-  
-  // backend not finish yet
-  const handleLeave = async ()=>{
-    setErrorMessage("not implemented yet")
-  }
-  //(backend not finish yet) only admin can delete group chat
+
+  // users not admin can leave group
+  const handleLeave = async () => {
+    try {
+      setErrorMessage("Wait, Leaving from the Group...");
+      setButtonDisable(true);
+
+      const { data } = await axiosPrivate.delete("chat/leaveGroup", {
+        // data property must have to be added to send the paloaded data in delete method
+        data: {
+          chatId: selectedChat?._id,
+        },
+      });
+      console.log(data);
+
+      // removing the group chat from chat list and make next chat as selected chat
+      setChats((prevChats) => {
+        if (prevChats.length === 1) {
+          setSelectedChat({});
+        } else if (
+          prevChats.length > 1 &&
+          prevChats[0]._id === selectedChat?._id
+        ) {
+          setSelectedChat(prevChats[1]);
+        } else {
+          setSelectedChat(prevChats[0]);
+        }
+
+        return prevChats.filter((chat) => chat?._id !== selectedChat?._id);
+      });
+
+      setErrorMessage("");
+      setButtonDisable(false);
+      setViewDetail(false);
+    } catch (error) {
+      console.log(error);
+      // Access specific error message if available
+      const errorMessage =
+        error.response?.data?.message || "An error occurred.";
+      setErrorMessage(errorMessage);
+      setButtonDisable(false);
+    }
+  };
+
+  // only admin can delete group chat
   const handleDeleteGroup = async () => {
-    setErrorMessage("Sorry, Not implemented yet");
+    try {
+      setErrorMessage("Wait, Deleting the Group...");
+      setButtonDisable(true);
 
-    // try {
-    //   setErrorMessage("Wait, Deleting the Group...");
-    //   setButtonDisable(true);
+      const { data } = await axiosPrivate.delete("chat/deleteGroup", {
+        // data property must have to be added to send the paloaded data in delete method
+        data: {
+          chatId: selectedChat?._id,
+        },
+      });
+      console.log(data);
 
-    //   const { data } = await axiosPrivate.delete("chat/deleteGroup", {
-    //     // data property must have to be added to send the paloaded data in delete method
-    //     data: {
-    //       chatId: selectedChat?._id,
-    //     },
-    //   });
-    //   console.log(data);
+      // removing from chatlist and make next chat as selected chat
+      setChats((prevChats) => {
+        if (prevChats.length === 1) {
+          setSelectedChat({});
+        } else if (
+          prevChats.length > 1 &&
+          prevChats[0]._id === selectedChat?._id
+        ) {
+          setSelectedChat(prevChats[1]);
+        } else {
+          setSelectedChat(prevChats[0]);
+        }
 
-    //   setChats((prevChats) => {
-    //     if (prevChats.length === 1) {
-    //       setSelectedChat({});
-    //     } else if (
-    //       prevChats.length > 1 &&
-    //       prevChats[0]._id === selectedChat?._id
-    //     ) {
-    //       setSelectedChat(prevChats[1]);
-    //     } else {
-    //       setSelectedChat(prevChats[0]);
-    //     }
+        return prevChats.filter((chat) => chat?._id !== selectedChat?._id);
+      });
 
-    //     return prevChats.filter((chat) => chat?._id !== selectedChat?._id);
-    //   });
-
-    //   setErrorMessage("");
-    //   setButtonDisable(false);
-    //   setViewDetail(false);
-    // } catch (error) {
-    //   console.log(error);
-    //   // Access specific error message if available
-    //   const errorMessage =
-    //     error.response?.data?.message || "An error occurred.";
-    //   setErrorMessage(errorMessage);
-    //   setButtonDisable(false);
-    // }
+      setErrorMessage("");
+      setButtonDisable(false);
+      setViewDetail(false);
+    } catch (error) {
+      console.log(error);
+      // Access specific error message if available
+      const errorMessage =
+        error.response?.data?.message || "An error occurred.";
+      setErrorMessage(errorMessage);
+      setButtonDisable(false);
+    }
   };
 
   return (
-    <div className="absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
+    <div className="z-10 absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
       <div className="flex flex-col w-screen h-screen sm:w-[310px] sm:h-[70%] py-2 px-4 border-2 rounded-md bg-neutral-800">
         {/* heading */}
         <section className="relative pt-2 pb-6">
@@ -264,7 +310,7 @@ const GroupUpdate = ({ setViewDetail }) => {
         </section>
 
         {showMemebers ? (
-          <ul className="h-full overflow-x-hidden custom-scrollbar overflow-y-auto">
+          <ul className="h-full mt-1 overflow-x-hidden custom-scrollbar overflow-y-auto">
             {selectedChat?.users.map((eachUser) => {
               return (
                 <li
@@ -329,10 +375,10 @@ const GroupUpdate = ({ setViewDetail }) => {
 
             {/* search users list */}
             <section className="min-h-0 flex-grow">
-              {loading ? (
-                <p className="px-2">Loading...</p>
+              {loading || searchUsers.length === 0 ? (
+                <p className="px-2">{searchMessage}</p>
               ) : (
-                <ul className=" h-full overflow-x-hidden custom-scrollbar overflow-y-auto">
+                <ul className=" h-full mt-1 overflow-x-hidden custom-scrollbar overflow-y-auto">
                   {searchUsers.map((eachUser) => {
                     return (
                       <li

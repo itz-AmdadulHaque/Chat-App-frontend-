@@ -10,6 +10,7 @@ const GroupModel = ({ setGroupClick }) => {
   const [groupName, setGroupName] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [searchUsers, setSearchUsers] = useState([]);
+  const [searchMessage, setSearchMessage] = useState("Search for friend");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [errorMesage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,15 +19,27 @@ const GroupModel = ({ setGroupClick }) => {
     e.preventDefault();
     try {
       setLoading(true);
+      setSearchMessage("Loading...")
+
       const { data } = await axiosPrivate.get(
         `/users/allUser?search=${searchValue}`
       );
+
+      if (data?.data.length === 0) {
+        setSearchMessage("No user Found");
+      } else {
+        setSearchMessage("");
+      }
 
       console.log("users: \n", data);
       setSearchUsers(data?.data);
       setLoading(false);
     } catch (error) {
-      console.log(error?.message);
+      console.log(error);
+      // Access specific error message if available
+      const errorMessage =
+        error.response?.data?.message || "An error occurred.";
+      setErrorMessage(errorMessage);
       setLoading(false);
     }
   };
@@ -65,7 +78,7 @@ const GroupModel = ({ setGroupClick }) => {
   };
 
   return (
-    <div className="absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
+    <div className="z-10 absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
       <div className="flex flex-col w-screen h-screen sm:w-[310px] sm:h-[70%] p-2 border-2 rounded-md bg-neutral-800">
         {/* heading */}
         <section className="relative pt-2 pb-6">
@@ -146,8 +159,8 @@ const GroupModel = ({ setGroupClick }) => {
 
         {/* search users list */}
         <section className="min-h-0 flex-grow">
-          {loading ? (
-            <p className="px-2">Loading...</p>
+          {loading || searchUsers.length === 0 ? (
+            <p className="px-2">{searchMessage}</p>
           ) : (
             <ul className=" h-full overflow-x-hidden custom-scrollbar overflow-y-auto">
               {searchUsers.map((user) => {

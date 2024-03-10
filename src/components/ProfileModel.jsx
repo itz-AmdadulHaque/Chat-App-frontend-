@@ -2,7 +2,7 @@ import { RxCross2 } from "react-icons/rx";
 
 const ProfileModel = ({ setViewDetail, viewUser }) => {
   return (
-    <div className="absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
+    <div className="z-10 absolute h-screen w-screen top-0 right-0 flex justify-center items-center backdrop-blur-sm">
       <div className="flex flex-col w-screen h-screen sm:w-[310px] sm:min-h-[380px] sm:h-max p-2 border-2 rounded-md bg-neutral-800">
         {/* heading */}
         <section className="relative pt-2 pb-6">

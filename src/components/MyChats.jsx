@@ -22,7 +22,7 @@ const MyChats = () => {
         </button>
         {groupClick && <GroupModel setGroupClick= {setGroupClick}/>}
       </section>
-
+      {chats.length === 0 && <p className="h-full flex flex-col justify-center items-center">No chats</p>}
       <section className="min-h-0 flex-grow">
         <ul className="h-full  custom-scrollbar overflow-x-hidden overflow-y-auto">
           {chats.map((chat, index) => (

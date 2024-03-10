@@ -31,7 +31,7 @@ const Navbar = () => {
   };
   return (
     <nav className="flex items-center justify-between py-2 px-4 bg-neutral-800">
-      <div className="hidden md:block">
+      <div className="">
         <Search />
       </div>
 
@@ -51,7 +51,7 @@ const Navbar = () => {
 
         {/* dropdown */}
         {showDetail && (
-          <div className="w-24 p-2 mt-[2px] grid text-left absolute right-0 bg-neutral-900">
+          <div className="w-24 p-2 mt-[2px] grid text-left absolute right-0 bg-neutral-900 z-10">
             <button className="p-2 hover:bg-neutral-700" onClick={()=> setShowProfile(pre => !pre)}>Profile</button>
             <button className="p-2 hover:bg-neutral-700" onClick={handleLogout}>
               Logout

@@ -10,6 +10,7 @@ const Search = () => {
   const { setChats, setSelectedChat } = useChat();
 
   const [search, setSearch] = useState(false);
+  const [searchMessage, setSearchMessage] = useState("Search for friend");
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
@@ -19,13 +20,24 @@ const Search = () => {
     e.preventDefault();
     try {
       setLoading(true);
+      setSearchMessage("Loading...")
+
       const { data } = await axiosPrivate.get(`/users/allUser?search=${value}`);
 
       console.log("users: \n", data);
+      if(data?.data.length ===0 ){
+        setSearchMessage("No user found")
+      } else{
+        setSearchMessage("")
+      }
       setUsers(data?.data);
       setLoading(false);
     } catch (error) {
-      console.log(error?.message);
+      console.log(error);
+      const errorMessage =
+        error.response?.data?.message || "An error occurred.";
+      
+      setSearchMessage(errorMessage)
       setLoading(false);
     }
   };
@@ -59,6 +71,7 @@ const Search = () => {
       setChatLoading(false);
     }
   };
+
   return (
     <div className="flex flex-col">
       <button
@@ -69,7 +82,7 @@ const Search = () => {
       </button>
 
       {search && (
-        <div className="bg-neutral-600 px-4 pt-4 pb-2 w-screen sm:w-[320px] absolute top-0 left-0 h-screen flex flex-col">
+        <div className="bg-neutral-600 px-4 pt-4 pb-2 w-screen sm:w-[320px] absolute top-0 left-0 h-screen flex flex-col z-10">
           <form className="flex gap-2 justify-center" onSubmit={handleSearch}>
             <input
               className="bg-neutral-600 border-2 border-neutral-500 rounded-md px-2"
@@ -98,8 +111,7 @@ const Search = () => {
           <hr className="mt-2 border-neutral-800" />
 
           {/* for loading */}
-          {loading && <p>Loading...</p>}
-          {users.length <= 0 && !loading && <p>No user found</p>}
+          <p>{searchMessage}</p>
 
           {/* found users */}
           <ul className="custom-scrollbar flex-grow overflow-x-hidden overflow-y-auto scroll-smooth">
