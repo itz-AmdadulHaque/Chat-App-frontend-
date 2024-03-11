@@ -31,9 +31,8 @@ const Navbar = () => {
   };
   return (
     <nav className="flex items-center justify-between py-2 px-4 bg-neutral-800">
-      <div className="">
+      {/* search option */}
         <Search />
-      </div>
 
       <h1 className="flex items-center gap-2 text-2xl text-neutral-400 font-semibold">
         <div className="w-6 h-6 bg-[url('/favicon.ico')] bg-contain relative bottom-[-2px]"></div>

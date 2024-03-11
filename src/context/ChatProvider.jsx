@@ -7,8 +7,11 @@ export const ChatProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState({});
-  const [waiting, setWaiting] = useState(false)
+  const [waiting, setWaiting] = useState(false);
   const [notification, setNotification] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   return (
     <ChatContext.Provider
@@ -24,7 +27,13 @@ export const ChatProvider = ({ children }) => {
         notification,
         setNotification,
         waiting,
-        setWaiting
+        setWaiting,
+        socket,
+        setSocket,
+        socketConnected,
+        setSocketConnected,
+        isMobile,
+        setIsMobile,
       }}
     >
       {children}

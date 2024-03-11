@@ -18,7 +18,7 @@ const ProfileModel = ({ setViewDetail, viewUser }) => {
         {/* show image and name */}
         <img
           src={viewUser?.pic}
-          className="w-[80%] h-auto mx-auto rounded-full border-2 border-neutral-600"
+          className="w-[65%] h-auto mx-auto rounded-full border-2 border-neutral-600"
           alt="Profile image"
         />
         <p className="mt-2 text-neutral-300 text-2xl text-center">

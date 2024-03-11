@@ -2,6 +2,7 @@ import { IoSendSharp } from "react-icons/io5";
 import useChat from "../hooks/useChat";
 import chatName from "../utils/chatName";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { BiArrowBack } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import GroupUpdate from "./GroupUpdate";
 import ProfileModel from "./ProfileModel";
@@ -9,16 +10,22 @@ import Messages from "./Messages";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const Chatbox = () => {
-  const { user, chats, selectedChat } = useChat();
+  const {
+    user,
+    chats,
+    selectedChat,
+    setSelectedChat,
+    socket,
+    socketConnected,
+    isMobile
+  } = useChat();
   const axiosPrivate = useAxiosPrivate();
 
   const [viewDetail, setViewDetail] = useState(false);
   const [messageValue, setMessageValue] = useState("");
   const [allMessages, setAllMessages] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [sendError, setSendError] = useState(
-    ""
-  );
+  const [sendError, setSendError] = useState("");
 
   // get all the messages
   const fetchMessages = async () => {
@@ -27,6 +34,8 @@ const Chatbox = () => {
       console.log("Messages", data);
 
       setAllMessages(data?.data);
+
+      socket.emit("join chat", selectedChat?._id);
     } catch (error) {
       console.log(error);
       // Access specific error message if available
@@ -34,12 +43,16 @@ const Chatbox = () => {
         error.response?.data?.message || "An error occurred.";
     }
   };
+
   useEffect(() => {
-    fetchMessages();
+    if (Object.keys(selectedChat).length !== 0) {
+      fetchMessages();
+    }
   }, [selectedChat]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    setSendError("");
 
     try {
       setButtonDisabled(true);
@@ -63,9 +76,10 @@ const Chatbox = () => {
       setSendError("Sending failed, check internet connection");
     }
   };
+
   return (
-    <div className="min-h-0 px-2 flex-grow bg-neutral-800">
-      {chats.length === 0 ? (
+    <div className={`min-h-0 px-2 w-full sm:flex-grow bg-neutral-800 ${isMobile && Object.keys(selectedChat).length === 0 && "hidden"}`}>
+      {Object.keys(selectedChat).length === 0 ? (
         <div className="h-full flex flex-col justify-center items-center">
           <p>Search and Select a User to Chat</p>
         </div>
@@ -73,13 +87,18 @@ const Chatbox = () => {
         <div className="h-full flex flex-col">
           {/* chat name and detail icon option */}
           <section className="p-2 flex justify-between items-center">
-            <h3 className="text-lg font-semibold">
-              {selectedChat?.isGroupChat
-                ? selectedChat?.chatName
-                : Object.keys(selectedChat).length !== 0
-                ? chatName(user?._id, selectedChat?.users)
-                : "Loading..."}
-            </h3>
+            <div className="flex items-center gap-1">
+              <button className="px-[4px]  hover:text-red-300 sm:hidden" onClick={()=>{
+                setSelectedChat({})
+              }}>
+                <BiArrowBack />
+              </button>
+              <h3 className="text-lg font-semibold">
+                {selectedChat?.isGroupChat
+                  ? selectedChat?.chatName
+                  : chatName(user?._id, selectedChat?.users)}
+              </h3>
+            </div>
 
             {/* view detail */}
             <div>

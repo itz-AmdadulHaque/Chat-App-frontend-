@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useChat from "../../hooks/useChat.js";
 import { axiosPrivate } from "../../api/axios.js";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser, setToken } = useChat();
+  const { setUser, setToken, setIsMobile } = useChat();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [disable, setDisable] = useState(false);
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

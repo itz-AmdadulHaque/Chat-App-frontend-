@@ -78,7 +78,7 @@ const Search = () => {
         className="flex gap-2 items-center p-2 w-max border-2 rounded-md border-neutral-600 bg-neutral-600 hover:border-neutral-500"
         onClick={() => setSearch((pre) => !pre)}
       >
-        <BsSearch /> Search for friends
+        <BsSearch /> <p className="hidden sm:block">Search for friends</p>
       </button>
 
       {search && (
