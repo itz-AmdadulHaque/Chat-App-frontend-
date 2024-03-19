@@ -16,51 +16,56 @@ const ChatPage = () => {
     setSelectedChat,
     Waiting,
     setWaiting,
-    socket,
-    setSocket,
-    setSocketConnected,
     isMobile,
   } = useChat();
   const axiosPrivate = useAxiosPrivate();
 
-  const [viewChats, setViewChat] = useState(false)
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setWaiting(true);
-        if (Object.keys(user).length === 0) {
-          //get user data if refresh
-          const resUser = await axiosPrivate.get("/users/");
-          console.log("User Profile: \n", resUser?.data?.data);
-          setUser(resUser?.data?.data);
-        }
 
         const resChats = await axiosPrivate.get("/chat");
         console.log(resChats?.data?.data);
         setChats(resChats?.data?.data);
 
-        // in mobile we wont set the selected chat untill click on certain chat
-        const storeIndex = localStorage.getItem("selectedChatIndex");
+        //get user if page refresh
+        if (Object.keys(user).length === 0) {
+          const resUser = await axiosPrivate.get("/users/");
+          console.log("User Profile: \n", resUser?.data?.data);
+          setUser(resUser?.data?.data);
 
-        if (!isMobile || storeIndex) {
-          // getting selected chat index from chats list from storage or set to first one
-          const selectedChatIndex = storeIndex || 0;
+          // if page refresh we have to get the localy store value using user id
 
-          const chatIndex = parseInt(selectedChatIndex);
-          console.log(parseInt(selectedChatIndex));
+          // in mobile we wont set the selected chat untill click on certain chat
+          const storeIndex = localStorage.getItem(`${resUser?.data?.data?._id}`);
 
-          setSelectedChat(resChats?.data?.data[chatIndex]);
+          if (!isMobile || storeIndex) {
+            // getting selected chat index from chats list from storage or set to first one
+            const selectedChatIndex = storeIndex || 0;
+
+            const chatIndex = parseInt(selectedChatIndex);
+            console.log(parseInt(selectedChatIndex));
+
+            setSelectedChat(resChats?.data?.data[chatIndex]);
+          }
+        } else {
+          // in mobile we wont set the selected chat untill click on certain chat
+          const storeIndex = localStorage.getItem(`${user?._id}`);
+
+          if (!isMobile || storeIndex) {
+            // getting selected chat index from chats list from storage or set to first one
+            const selectedChatIndex = storeIndex || 0;
+
+            const chatIndex = parseInt(selectedChatIndex);
+            console.log(parseInt(selectedChatIndex));
+
+            setSelectedChat(resChats?.data?.data[chatIndex]);
+          }
         }
-
-        //set socket connection
-        const backendUrl = import.meta.env.VITE_BASE_URL.slice(0, -6); // removing /api/v1
-        const newSocket = io(backendUrl);
-
-        newSocket.emit("setup", user);
-        newSocket.on("connection", () => setSocketConnected(true));
-
-        setSocket(newSocket);
 
         setWaiting(false);
       } catch (error) {
@@ -72,17 +77,32 @@ const ChatPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (user?._id) {
+      //set socket connection
+      const backendUrl = import.meta.env.VITE_BASE_URL.slice(0, -6); // removing /api/v1
+      const newSocket = io(backendUrl);
+      setSocket(newSocket);
+      console.log("//user addded//");
+      newSocket.emit("setup", user);
+      newSocket.on("connected", () => {
+        setSocketConnected(true);
+      });
+    }
+  }, [user]);
+
   return (
     <div className="flex flex-col gap-[2px] h-screen">
-      {Waiting && socket ? (
+      {/* must check chat is selected or the 'join room' will be undefined */}
+      {!Waiting && socket && !socketConnected && !selectedChat?._id ? (
         "loading ..."
       ) : (
         <>
           <Navbar />
           <div className="min-h-0 flex-grow">
             <div className=" h-full flex gap-[2px]">
-              <MyChats viewChats={viewChats}/>
-              <Chatbox viewChats={viewChats}/>
+              <MyChats />
+              <Chatbox socket={socket} socketConnected={socketConnected} />
             </div>
           </div>
         </>

@@ -9,7 +9,7 @@ export const ChatProvider = ({ children }) => {
   const [selectedChat, setSelectedChat] = useState({});
   const [waiting, setWaiting] = useState(false);
   const [notification, setNotification] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState({});
   const [socketConnected, setSocketConnected] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 

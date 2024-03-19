@@ -1,17 +1,18 @@
 import useChat from "../hooks/useChat";
+import TypingIndicator from "./Loadings/TypingIndicator";
 
-const Messages = ({ allMessages }) => {
+const Messages = ({ allMessages, isTyping }) => {
   const { user } = useChat();
   return (
     <div className="h-full custom-scrollbar overflow-y-auto scroll-smooth rotate-180">
       <ul className="rotate-180">
-        {allMessages.map((message) => {
+        {allMessages.map((message, index) => {
           return (
             <li
               className={`w-max flex gap-[1px] items-center  ${
                 user?._id === message?.sender?._id ? "ml-auto" : ""
               } `}
-              key={message?._id}
+              key={index}
             >
               {user?._id !== message?.sender?._id && (
                 <div
@@ -32,6 +33,9 @@ const Messages = ({ allMessages }) => {
             </li>
           );
         })}
+
+        {/* typing indicator */}
+        <li>{isTyping && <TypingIndicator />}</li>
       </ul>
     </div>
   );
