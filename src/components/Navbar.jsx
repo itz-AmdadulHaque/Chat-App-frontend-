@@ -6,7 +6,15 @@ import { useNavigate } from "react-router-dom";
 import ProfileModel from "./ProfileModel";
 const Navbar = () => {
   const axiosPrivate = useAxiosPrivate();
-  const { user, setUser, setToken, setChats, setSelectedChat, setNotification } = useChat();
+  const {
+    user,
+    setUser,
+    setToken,
+    setChats,
+    setSelectedChat,
+    notification,
+    setNotification,
+  } = useChat();
   const navigate = useNavigate();
 
   const [showDetail, setShowDetail] = useState(false);
@@ -15,7 +23,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       const { data } = await axiosPrivate.get("/users/logout");
-      localStorage.removeItem("selectedChatIndex");
+      localStorage.removeItem(`${user?._id}`);
       console.log(data);
 
       setUser({});
@@ -32,7 +40,7 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between py-2 px-4 bg-neutral-800">
       {/* search option */}
-        <Search />
+      <Search />
 
       <h1 className="flex items-center gap-2 text-2xl text-neutral-400 font-semibold">
         <div className="w-6 h-6 bg-[url('/favicon.ico')] bg-contain relative bottom-[-2px]"></div>
@@ -48,10 +56,20 @@ const Navbar = () => {
           onClick={() => setShowDetail((pre) => !pre)}
         ></div>
 
+        {/* for notification indicator */}
+        <div className="absolute top-[-12px] right-[-4px] text-red-600 font-bold text-sm">
+          {notification.length === 0 ? "": notification.length}
+        </div>
+
         {/* dropdown */}
         {showDetail && (
           <div className="w-24 p-2 mt-[2px] grid text-left absolute right-0 bg-neutral-900 z-10">
-            <button className="p-2 hover:bg-neutral-700" onClick={()=> setShowProfile(pre => !pre)}>Profile</button>
+            <button
+              className="p-2 hover:bg-neutral-700"
+              onClick={() => setShowProfile((pre) => !pre)}
+            >
+              Profile
+            </button>
             <button className="p-2 hover:bg-neutral-700" onClick={handleLogout}>
               Logout
             </button>
@@ -60,8 +78,9 @@ const Navbar = () => {
       </div>
 
       {/* profile detail */}
-      {showProfile && <ProfileModel setViewDetail={setShowProfile} viewUser={user}/>}
-
+      {showProfile && (
+        <ProfileModel setViewDetail={setShowProfile} viewUser={user} />
+      )}
     </nav>
   );
 };

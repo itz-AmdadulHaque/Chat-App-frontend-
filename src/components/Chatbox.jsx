@@ -8,32 +8,39 @@ import GroupUpdate from "./GroupUpdate";
 import ProfileModel from "./ProfileModel";
 import Messages from "./Messages";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import SpinnerCenter from "./Loadings/SpinnerCenter";
 
 const Chatbox = ({ socket, socketConnected }) => {
-  const { user, setChats, selectedChat, setSelectedChat, isMobile } = useChat();
+  const { user, chats, setChats,allMessages, setAllMessages, selectedChat, setSelectedChat, notification, setNotification, isMobile } = useChat();
   const axiosPrivate = useAxiosPrivate();
 
   const [viewDetail, setViewDetail] = useState(false);
   const [messageValue, setMessageValue] = useState("");
-  const [allMessages, setAllMessages] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [messageError, setMessageError] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const typingTimeoutRef = useRef(null);
 
   // get all the messages
   const fetchMessages = async () => {
     try {
+      setLoading(true);
       const { data } = await axiosPrivate.get(`/messages/${selectedChat?._id}`);
       console.log("Messages", data);
 
       setAllMessages(data?.data);
+      setLoading(false);
+      setMessageError("");
     } catch (error) {
       console.log(error);
       // Access specific error message if available
       const errorMessage =
         error.response?.data?.message || "An error occurred.";
+      setLoading(false);
+      setMessageError(errorMessage);
     }
   };
   useEffect(() => {
@@ -42,48 +49,16 @@ const Chatbox = ({ socket, socketConnected }) => {
     }
   }, [selectedChat]);
 
-  // adding typing indicator, recieve message events
+  // adding typing indicator events
   useEffect(() => {
     const handleTyping = () => setIsTyping(true);
     const handleStopTyping = () => setIsTyping(false);
-
-    const handleMessageReceived = (newMessageRecieved) => {
-      //set this chat to top of chat list
-      // setChats((preChats) => {
-      //   const filterChats = preChats.filter(
-      //     (chat) => chat?._id !== selectedChat?._id
-      //   );
-      //   return [selectedChat, ...filterChats];
-      // });
-
-      if (
-        Object.keys(selectedChat).length === 0 ||
-        selectedChat?._id !== newMessageRecieved?.chat?._id
-      ) {
-        // give notification
-
-        // store chat index according to selected chat
-        console.log("Not selected chat or other slected");
-      } else {
-        console.log("in same chat");
-        setAllMessages((preMessage) => [...preMessage, newMessageRecieved]);
-
-        //when message recive this chat is on top, on refresh the top chat will show
-        // both in message recieve and send, this should be added
-        localStorage.setItem(`${user?._id}`, "0");
-      }
-    };
 
     if (socketConnected && socket && selectedChat._id) {
       console.log("Typing add for:", selectedChat?.chatName);
       socket.emit("join chat", selectedChat?._id);
       socket.on("typing", handleTyping);
       socket.on("stop typing", handleStopTyping);
-
-      // console.log("//////user: ", user.name);
-
-      // message recieve even
-      socket.on("message_recieved", handleMessageReceived);
     }
 
     return () => {
@@ -92,8 +67,6 @@ const Chatbox = ({ socket, socketConnected }) => {
 
         socket.off("typing", handleTyping);
         socket.off("stop typing", handleStopTyping);
-
-        socket.off("message_recieved", handleMessageReceived);
       }
     };
   }, [socketConnected, socket, selectedChat]);
@@ -129,6 +102,7 @@ const Chatbox = ({ socket, socketConnected }) => {
         const filterChats = preChats.filter(
           (chat) => chat?._id !== selectedChat?._id
         );
+        selectedChat.latestMessage = data?.data
         return [selectedChat, ...filterChats];
       });
       localStorage.setItem(`${user?._id}`, "0"); // this chat is now in top
@@ -180,7 +154,7 @@ const Chatbox = ({ socket, socketConnected }) => {
 
   return (
     <div
-      className={`min-h-0 px-2 w-full sm:flex-grow bg-neutral-800 ${
+      className={`min-w-0 px-2 w-full flex-grow bg-neutral-800 ${
         isMobile && Object.keys(selectedChat).length === 0 && "hidden"
       }`}
     >
@@ -199,6 +173,7 @@ const Chatbox = ({ socket, socketConnected }) => {
                 onClick={() => {
                   setSelectedChat({});
                   setMessageValue("");
+                  localStorage.removeItem(`${user?._id}`);
                   socket.emit("leave chat", selectedChat?._id);
                 }}
               >
@@ -238,11 +213,15 @@ const Chatbox = ({ socket, socketConnected }) => {
           </section>
 
           {/* message box */}
-          <section className="min-h-0 flex-grow bg-neutral-600 rounded-md">
-            {selectedChat?._id ? (
-              <Messages allMessages={allMessages} isTyping={isTyping} />
+          <section className="min-h-0 flex-grow bg-neutral-600 rounded-md relative">
+            {!selectedChat?._id || loading ? (
+              <SpinnerCenter />
+            ) : messageError ? (
+              <div className="h-full flex justify-center items-center">
+                <p className="text-xl text-red-500">{messageError}</p>
+              </div>
             ) : (
-              "loading..."
+              <Messages allMessages={allMessages} isTyping={isTyping} />
             )}
           </section>
 

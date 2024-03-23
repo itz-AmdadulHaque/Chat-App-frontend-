@@ -1,9 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
+import { axiosPrivate } from "../../api/axios.js";
 import { useNavigate } from "react-router-dom";
+import useChat from "../../hooks/useChat.js";
 
 const Singup = () => {
   const navigate = useNavigate();
+  const { setUser, setToken } = useChat();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,31 +19,28 @@ const Singup = () => {
     e.preventDefault();
     setDisable(true);
     setMessage("Loading... Please wait");
+
     if (password !== confirmpassword) {
       setMessage("Confirm password does not match");
       setDisable(false);
       return;
     }
+
     try {
-      const URL = import.meta.env.VITE_BASE_URL; //alway use this to access env in vite, "VITE_NAME"
-      // console.log("url: ",URL)
-      const response = await axios.post(
-        `${URL}/users/register`,
+      const { data } = await axiosPrivate.post(
+        "/users/register",
         {
           name,
           email,
           password,
           pic: pic || "",
-        },
-        {
-          withCredentials: true, // must needed to include cookies in cross-origin requests.
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
         }
       );
-      console.log(response.data);
-      setMessage(response.data.message);
+
+      console.log(data);
+      setUser(data?.data?.user);
+      setToken(data?.data?.accessToken);
+      setMessage(data.message);
 
       navigate("/chat", { replace: true });
     } catch (error) {

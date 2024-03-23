@@ -7,7 +7,7 @@ import useChat from "../hooks/useChat";
 
 const Search = () => {
   const axiosPrivate = useAxiosPrivate();
-  const { setChats, setSelectedChat } = useChat();
+  const {user, setChats, setSelectedChat } = useChat();
 
   const [search, setSearch] = useState(false);
   const [searchMessage, setSearchMessage] = useState("Search for friend");
@@ -50,13 +50,13 @@ const Search = () => {
 
       setChats((pre) => {
         const chatExists = pre.find((chat) =>
-          chat?.users?.some((user) => user._id === userId)
+          chat?.users?.some((eachUser) => eachUser._id === userId)
         );
 
         if (chatExists) {
           return pre;
         } else {
-          localStorage.setItem("selectedChatIndex", "0");
+          localStorage.setItem(`${user?._id}`,"0");
           setSelectedChat(data?.data);
           return [data?.data, ...pre];
         }
@@ -115,21 +115,21 @@ const Search = () => {
 
           {/* found users */}
           <ul className="custom-scrollbar flex-grow overflow-x-hidden overflow-y-auto scroll-smooth">
-            {users.map((user) => {
+            {users.map((eachUser) => {
               return (
                 <li
-                  onClick={() => handleAddChat(user?._id)}
+                  onClick={() => handleAddChat(eachUser?._id)}
                   className="relative p-2 my-2 bg-neutral-700 hover:bg-neutral-800 flex items-center gap-2"
-                  key={user?._id}
+                  key={eachUser?._id}
                   disabled={chatLoading}
                 >
                   <div
                     className={`w-10 h-10 rounded-full bg-cover bg-center bg-neutral-800`}
-                    style={{ backgroundImage: `url(${user?.pic})` }}
+                    style={{ backgroundImage: `url(${eachUser?.pic})` }}
                   ></div>
                   <div>
-                    <h3 className="font-semibold">{user?.name}</h3>
-                    <p className="text-neutral-400 text-sm">{user?.email}</p>
+                    <h3 className="font-semibold">{eachUser?.name}</h3>
+                    <p className="text-neutral-400 text-sm">{eachUser?.email}</p>
                   </div>
                 </li>
               );
