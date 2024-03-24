@@ -6,6 +6,7 @@ import MyChats from "../components/MyChats";
 import Chatbox from "../components/Chatbox";
 import { io } from "socket.io-client";
 import SpinnerCenter from "../components/Loadings/SpinnerCenter";
+import { useNavigate } from "react-router-dom";
 
 const ChatPage = () => {
   const {
@@ -24,6 +25,7 @@ const ChatPage = () => {
     isMobile,
   } = useChat();
   const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
 
   const [socketConnected, setSocketConnected] = useState(false);
   const [socket, setSocket] = useState(null);
@@ -36,13 +38,13 @@ const ChatPage = () => {
 
         // get all chats
         const resChats = await axiosPrivate.get("/chat");
-        console.log(resChats?.data?.data);
+        // console.log(resChats?.data?.data);
         setChats(resChats?.data?.data);
 
         //get user if page refresh
         if (Object.keys(user).length === 0) {
           const resUser = await axiosPrivate.get("/users/");
-          console.log("User Profile: \n", resUser?.data?.data);
+          // console.log("User Profile: \n", resUser?.data?.data);
           setUser(resUser?.data?.data);
 
           // if page refresh we have to get the localy store value using user id
@@ -57,7 +59,7 @@ const ChatPage = () => {
             const selectedChatIndex = storeIndex || 0;
 
             const chatIndex = parseInt(selectedChatIndex);
-            console.log(parseInt(selectedChatIndex));
+            // console.log(parseInt(selectedChatIndex));
 
             setSelectedChat(resChats?.data?.data[chatIndex]);
           }
@@ -70,7 +72,7 @@ const ChatPage = () => {
             const selectedChatIndex = storeIndex || 0;
 
             const chatIndex = parseInt(selectedChatIndex);
-            console.log(parseInt(selectedChatIndex));
+            // console.log(parseInt(selectedChatIndex));
 
             setSelectedChat(resChats?.data?.data[chatIndex]);
           }
@@ -83,15 +85,19 @@ const ChatPage = () => {
         // Access specific error message if available
         const errorMessage =
           error.response?.data?.message || "An error occurred.";
-
         setErrorMessage(errorMessage);
         setWaiting(false);
+
+        // every thing is fine in production
+        // but in development useEffect run twice and cause error and make redirect
+        navigate("/", {replace: true})
       }
     }
 
     fetchData();
   }, []);
 
+  // adding socket and setup event
   useEffect(() => {
     if (user?._id) {
       //set socket connection
@@ -106,17 +112,39 @@ const ChatPage = () => {
     }
   }, [user]);
 
-  //  recieve message events
+  //  recieve message socket events
   useEffect(() => {
     const handleMessageReceived = (newMessageRecieved) => {
-      console.log("recieved message", newMessageRecieved);
-      //set this chat to top of chat list
+      // console.log("recieved message", newMessageRecieved);
+
+      //set the chat that message received at top of chat list
       setChats((preChats) => {
         const filterChats = preChats.filter(
           (chat) => chat?._id !== newMessageRecieved?.chat?._id
         );
-        newMessageRecieved.chat.latestMessage = newMessageRecieved
-        //  letest message not here
+
+        // store chat index according to selected chat
+        if (
+          selectedChat?._id &&
+          selectedChat?._id !== newMessageRecieved?.chat?._id
+        ) {
+          let indexOfSelectedChat = parseInt(
+            localStorage.getItem(`${user?._id}`)
+          );
+
+          const foundIndex = filterChats.findIndex((chat) => chat?._id === selectedChat?._id)
+
+          indexOfSelectedChat =
+          foundIndex !== -1 //if found
+              ? foundIndex
+              : indexOfSelectedChat;
+          localStorage.setItem(`${user?._id}`, `${indexOfSelectedChat + 1}`);
+        }
+
+        // add the letest message to the chat where message recieve
+        newMessageRecieved.chat.latestMessage = newMessageRecieved;
+
+        // make the chat on the top of the chat list
         return [newMessageRecieved?.chat, ...filterChats];
       });
       // console.log("selected chat: ", Object.keys(selectedChat).length)
@@ -130,10 +158,10 @@ const ChatPage = () => {
           ...preNotification,
           newMessageRecieved,
         ]);
-        // store chat index according to selected chat
-        console.log("Not selected chat or other slected");
+
+        // console.log("Not selected chat or other slected");
       } else {
-        console.log("in same chat");
+        // console.log("in same chat");
         setAllMessages((preMessage) => [...preMessage, newMessageRecieved]);
 
         //when message recive this chat is on top, on refresh the top chat will show

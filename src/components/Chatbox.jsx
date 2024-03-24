@@ -29,7 +29,7 @@ const Chatbox = ({ socket, socketConnected }) => {
     try {
       setLoading(true);
       const { data } = await axiosPrivate.get(`/messages/${selectedChat?._id}`);
-      console.log("Messages", data);
+      // console.log("Messages", data);
 
       setAllMessages(data?.data);
       setLoading(false);
@@ -55,7 +55,7 @@ const Chatbox = ({ socket, socketConnected }) => {
     const handleStopTyping = () => setIsTyping(false);
 
     if (socketConnected && socket && selectedChat._id) {
-      console.log("Typing add for:", selectedChat?.chatName);
+      // console.log("Typing add for:", selectedChat?.chatName);
       socket.emit("join chat", selectedChat?._id);
       socket.on("typing", handleTyping);
       socket.on("stop typing", handleStopTyping);
@@ -63,7 +63,7 @@ const Chatbox = ({ socket, socketConnected }) => {
 
     return () => {
       if (socketConnected && socket && selectedChat._id) {
-        console.log("Typing remove:", selectedChat?.chatName);
+        // console.log("Typing remove:", selectedChat?.chatName);
 
         socket.off("typing", handleTyping);
         socket.off("stop typing", handleStopTyping);
@@ -88,7 +88,7 @@ const Chatbox = ({ socket, socketConnected }) => {
         chatId: selectedChat?._id,
         content: messageValue,
       });
-      console.log(data);
+      // console.log(data);
 
       // emiting message so everyone recieve it in realtime
       socket.emit("new message", data?.data);
