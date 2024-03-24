@@ -15,7 +15,7 @@ function App() {
       const width = window.innerWidth;
       setIsMobile(width <= 576); // Adjust breakpoint as needed
 
-      console.log(width)
+      // console.log(width)
     };
 
     window.addEventListener("resize", handleResize);

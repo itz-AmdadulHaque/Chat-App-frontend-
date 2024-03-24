@@ -39,12 +39,12 @@ const ChatPage = () => {
 
         // get all chats
         const resChats = await axiosPrivate.get("/chat");
-        console.log(resChats?.data?.data);
+        // console.log(resChats?.data?.data);
         setChats(resChats?.data?.data);
 
         // if chat is empty there wont be any selected chat
         if ((resChats?.data?.data).length === 0) {
-          console.log("chat lenth: ", (resChats?.data?.data).length);
+          // console.log("chat lenth: ", (resChats?.data?.data).length);
           setSelectedChat({});
         }
 
@@ -61,6 +61,7 @@ const ChatPage = () => {
             `${resUser?.data?.data?._id}`
           );
 
+          // in mobile or a chat is selected then on refresh show that chat
           if (!isMobile || storeIndex) {
             // getting selected chat index from chats list from storage or set to first one
             const selectedChatIndex = storeIndex || 0;
@@ -70,6 +71,9 @@ const ChatPage = () => {
 
             setSelectedChat(resChats?.data?.data[chatIndex] || {});
             // {} because for new user no chat will be there
+          } else{
+            // in mobile if chat is not selected previously and refresh page
+            selectedChat({})
           }
         } else {
           // in mobile we wont set the selected chat untill click on certain chat
@@ -84,6 +88,9 @@ const ChatPage = () => {
 
             setSelectedChat(resChats?.data?.data[chatIndex] || {});
             // {} because for new user no chat will be there
+          }else{
+            // when log in 
+            selectedChat({})
           }
         }
 
