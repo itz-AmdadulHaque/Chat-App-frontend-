@@ -24,7 +24,7 @@ A simple chat app created using React, tailwind css, socket.io and the backend (
 
 ## Env variable
 
-- VITE_BASE_URL
+- VITE_BASE_URL (= "Your_URL/api/v1")
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
