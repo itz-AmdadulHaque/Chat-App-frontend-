@@ -33,13 +33,20 @@ const ChatPage = () => {
 
   useEffect(() => {
     async function fetchData() {
+      console.log(user);
       try {
         setWaiting(true);
 
         // get all chats
         const resChats = await axiosPrivate.get("/chat");
-        // console.log(resChats?.data?.data);
+        console.log(resChats?.data?.data);
         setChats(resChats?.data?.data);
+
+        // if chat is empty there wont be any selected chat
+        if ((resChats?.data?.data).length === 0) {
+          console.log("chat lenth: ", (resChats?.data?.data).length);
+          setSelectedChat({});
+        }
 
         //get user if page refresh
         if (Object.keys(user).length === 0) {
@@ -62,6 +69,7 @@ const ChatPage = () => {
             // console.log(parseInt(selectedChatIndex));
 
             setSelectedChat(resChats?.data?.data[chatIndex]);
+            
           }
         } else {
           // in mobile we wont set the selected chat untill click on certain chat
@@ -75,6 +83,7 @@ const ChatPage = () => {
             // console.log(parseInt(selectedChatIndex));
 
             setSelectedChat(resChats?.data?.data[chatIndex]);
+            // {} because for new user no chat will be there
           }
         }
 
@@ -90,7 +99,7 @@ const ChatPage = () => {
 
         // every thing is fine in production
         // but in development useEffect run twice and cause error and make redirect
-        navigate("/", {replace: true})
+        navigate("/", { replace: true });
       }
     }
 
@@ -132,10 +141,12 @@ const ChatPage = () => {
             localStorage.getItem(`${user?._id}`)
           );
 
-          const foundIndex = filterChats.findIndex((chat) => chat?._id === selectedChat?._id)
+          const foundIndex = filterChats.findIndex(
+            (chat) => chat?._id === selectedChat?._id
+          );
 
           indexOfSelectedChat =
-          foundIndex !== -1 //if found
+            foundIndex !== -1 //if found
               ? foundIndex
               : indexOfSelectedChat;
           localStorage.setItem(`${user?._id}`, `${indexOfSelectedChat + 1}`);
@@ -186,14 +197,7 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col gap-[2px] h-screen">
       {/* must check chat is selected or the 'join room' will be undefined */}
-      {!Waiting && socket && !socketConnected && !selectedChat?._id ? (
-        <>
-          <Navbar />
-          <div className="flex-grow">
-            <SpinnerCenter />
-          </div>
-        </>
-      ) : (
+      {!Waiting && socket && socketConnected && selectedChat ? (
         <>
           <Navbar />
           {errorMessage ? (
@@ -213,6 +217,13 @@ const ChatPage = () => {
               </div>
             </div>
           )}
+        </>
+      ) : (
+        <>
+          <Navbar />
+          <div className="flex-grow">
+            <SpinnerCenter />
+          </div>
         </>
       )}
     </div>

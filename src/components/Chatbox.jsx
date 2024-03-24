@@ -158,7 +158,7 @@ const Chatbox = ({ socket, socketConnected }) => {
         isMobile && Object.keys(selectedChat).length === 0 && "hidden"
       }`}
     >
-      {Object.keys(selectedChat).length === 0 ? (
+      {selectedChat && Object.keys(selectedChat).length === 0 ? (
         <div className="h-full flex flex-col justify-center items-center">
           <p>Search and Select a User to Chat</p>
         </div>

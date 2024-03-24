@@ -34,6 +34,11 @@ const Singup = () => {
           email,
           password,
           pic: pic || "",
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Set the content type
+          },
         }
       );
 

@@ -6,7 +6,7 @@ export const ChatProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [token, setToken] = useState("");
   const [chats, setChats] = useState([]);
-  const [selectedChat, setSelectedChat] = useState({});
+  const [selectedChat, setSelectedChat] = useState(null);
   const [waiting, setWaiting] = useState(false);
   const [notification, setNotification] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
