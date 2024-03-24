@@ -68,8 +68,8 @@ const ChatPage = () => {
             const chatIndex = parseInt(selectedChatIndex);
             // console.log(parseInt(selectedChatIndex));
 
-            setSelectedChat(resChats?.data?.data[chatIndex]);
-            
+            setSelectedChat(resChats?.data?.data[chatIndex] || {});
+            // {} because for new user no chat will be there
           }
         } else {
           // in mobile we wont set the selected chat untill click on certain chat
@@ -82,7 +82,7 @@ const ChatPage = () => {
             const chatIndex = parseInt(selectedChatIndex);
             // console.log(parseInt(selectedChatIndex));
 
-            setSelectedChat(resChats?.data?.data[chatIndex]);
+            setSelectedChat(resChats?.data?.data[chatIndex] || {});
             // {} because for new user no chat will be there
           }
         }
