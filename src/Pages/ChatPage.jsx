@@ -73,7 +73,7 @@ const ChatPage = () => {
             // {} because for new user no chat will be there
           } else{
             // in mobile if chat is not selected previously and refresh page
-            selectedChat({})
+            setSelectedChat({})
           }
         } else {
           // in mobile we wont set the selected chat untill click on certain chat
@@ -90,7 +90,7 @@ const ChatPage = () => {
             // {} because for new user no chat will be there
           }else{
             // when log in 
-            selectedChat({})
+            setSelectedChat({})
           }
         }
 
