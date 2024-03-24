@@ -16,10 +16,11 @@ A simple chat app created using React, tailwind css, socket.io and the backend (
 
 ### Future updates
 
-- forgot password and password change functionality
-- update user profile -name or image
-- all message fetch at once which make some delay. only show first page message and when scroll fetch older message
+- notification remain after refresh page
 - emty search show all user, it will be fix in future
+- forgot password and password change
+- update user profile name or image
+- all message fetch at once which make some delay. only show first page message and when scroll fetch older message
 
 ## Env variable
 
