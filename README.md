@@ -16,10 +16,13 @@ A simple chat app created using React, tailwind css, socket.io and the backend (
 
 ### Future updates
 
-- notification remain after refresh page
+- notification will remain after refresh page
 - emty search show all user, it will be fix in future
+- name and email string size limite to a specific number of character to show, so that in search and group add or remove or search for user, the string size don't cause any trouble
+- backgroup image is used rather then the 'img' tag in search user result. so intead of giving the height and width, give padding so it don't get squished by other component around it when the get bigger.
 - forgot password and password change
 - update user profile name or image
+- add group image and enable updating it
 - all message fetch at once which make some delay. only show first page message and when scroll fetch older message
 
 ## Env variable
