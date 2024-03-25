@@ -13,26 +13,35 @@ const Messages = ({ allMessages, isTyping }) => {
         ) : (
           allMessages.map((message, index) => {
             return (
-              <li
-                className={`w-full h-max flex gap-[1px] items-center `}
-                key={index}
-              >
+              <li className={`w-full flex my-[5px] px-[3px]`} key={index}>
                 {user?._id !== message?.sender?._id && (
                   <div
-                    className={`w-6 h-6 rounded-full bg-cover bg-center bg-neutral-800`}
+                    className={`p-[12px] mb-auto rounded-full bg-cover bg-center bg-neutral-800 ${
+                      message?.chat?.isGroupChat ? "mt-[17px]" : "mt-[2px]"
+                    }`}
                     style={{ backgroundImage: `url(${message?.sender?.pic})` }}
                   ></div>
                 )}
 
-                <p
-                  className={`m-[3px] py-[2px] px-[10px] rounded-xl w-max max-w-[90%] md:max-w-[47%] overflow-wrap break-words  ${
-                    user?._id === message?.sender?._id
-                      ? "bg-blue-900 ml-auto"
-                      : "bg-yellow-700"
-                  } `}
+                <div
+                  className={`ml-[3px] min-w-0 flex-grow flex flex-col`}
                 >
-                  {message?.content}
-                </p>
+                  {user?._id !== message?.sender?._id &&
+                    message?.chat?.isGroupChat && (
+                      <p className="ml-[2px] text-[10px] text-neutral-400">
+                        {message?.sender?.name}
+                      </p>
+                    )}
+                  <p
+                    className={`py-[2px] px-[10px] rounded-xl w-max max-w-[90%] md:max-w-[47%] overflow-wrap break-words  ${
+                      user?._id === message?.sender?._id
+                        ? "bg-blue-900 ml-auto"
+                        : "bg-yellow-700"
+                    } `}
+                  >
+                    {message?.content}
+                  </p>
+                </div>
               </li>
             );
           })

@@ -344,7 +344,7 @@ const GroupUpdate = ({ setViewDetail }) => {
                     )}
 
                   {/* show admin not the button */}
-                  {user?._id == eachUser?._id && (
+                  {eachUser?._id === selectedChat?.groupAdmin?._id && (
                     <p className="text-sm text-neutral-400">Admin</p>
                   )}
                 </li>
@@ -414,7 +414,7 @@ const GroupUpdate = ({ setViewDetail }) => {
           </>
         )}
 
-        {selectedChat?.groupAdmin?._id === user?._id ? (
+        {selectedChat && selectedChat?.groupAdmin?._id === user?._id ? (
           <button
             className="bg-red-700 hover:bg-red-600"
             onClick={handleDeleteGroup}

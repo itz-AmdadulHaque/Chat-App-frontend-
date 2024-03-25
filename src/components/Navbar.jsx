@@ -4,6 +4,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useChat from "../hooks/useChat";
 import { useNavigate } from "react-router-dom";
 import ProfileModel from "./ProfileModel";
+import SpinnerCenter from "./Loadings/SpinnerCenter";
 const Navbar = () => {
   const axiosPrivate = useAxiosPrivate();
   const {
@@ -19,9 +20,11 @@ const Navbar = () => {
 
   const [showDetail, setShowDetail] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [buttonDisable, setButtonDisable] = useState(false);
 
   const handleLogout = async () => {
     try {
+      setButtonDisable(true);
       const { data } = await axiosPrivate.get("/users/logout");
       localStorage.removeItem(`${user?._id}`);
       console.log(data);
@@ -32,9 +35,12 @@ const Navbar = () => {
       setSelectedChat({});
       setNotification([]);
 
+      setButtonDisable(false);
+
       navigate("/");
     } catch (error) {
       console.log(error);
+      setButtonDisable(false);
     }
   };
   return (
@@ -58,7 +64,7 @@ const Navbar = () => {
 
         {/* for notification indicator */}
         <div className="absolute top-[-12px] right-[-4px] text-red-600 font-bold text-sm">
-          {notification.length === 0 ? "": notification.length}
+          {notification.length === 0 ? "" : notification.length}
         </div>
 
         {/* dropdown */}
@@ -70,8 +76,12 @@ const Navbar = () => {
             >
               Profile
             </button>
-            <button className="p-2 hover:bg-neutral-700" onClick={handleLogout}>
-              Logout
+            <button
+              className="p-2 hover:bg-neutral-700 relative"
+              onClick={handleLogout}
+              disabled={buttonDisable}
+            >
+              Logout {buttonDisable && <SpinnerCenter />}
             </button>
           </div>
         )}
